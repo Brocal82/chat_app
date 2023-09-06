@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, ImageBackground, TouchableOpacity, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, TextInput, ImageBackground, TouchableOpacity, KeyboardAvoidingView, ScrollView, Alert } from 'react-native';
+import { getAuth, signInAnonymously } from "firebase/auth";
 
 const image = require('../images/Bg-Image.png');
 
@@ -11,8 +12,20 @@ const backgroundColors = {
 };
 
 const Start = ({ navigation }) => {
+  const auth = getAuth();
   const [name, setName] = useState('');
   const [color, setColor] = useState(backgroundColors.a);
+
+  const signInUser = () => {
+    signInAnonymously(auth)
+      .then(result => {
+        navigation.navigate("Chat", { userId: result.user.uid, name, color:color, });
+        Alert.alert("Signed in Successfully!");
+      })
+      .catch((error) => {
+        Alert.alert("Unable to sign in, try later again.", error);
+      })
+  }
 
   return (
     <ImageBackground source={image} resizeMode="cover" style={styles.image}>
@@ -24,7 +37,7 @@ const Start = ({ navigation }) => {
               style={styles.textInput}
               value={name}
               onChangeText={setName}
-              placeholder="Nickname"
+              placeholder="Nickaname"
               placeholderTextColor="#757083"
             />
             <Text style={styles.textColorSelector}>Choose background color:</Text>
@@ -65,9 +78,9 @@ const Start = ({ navigation }) => {
           </KeyboardAvoidingView>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('Chat', { name: name, color: color })}
+            onPress={signInUser} // Call the handleStartChatting function when the button is pressed
           >
-            <Text style={styles.buttonText}>Go to Chat</Text>
+            <Text style={styles.buttonText}>Start Chatting</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
