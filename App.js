@@ -1,3 +1,4 @@
+// Import necessary modules and components
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import Start from './components/Start';
@@ -6,17 +7,20 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { initializeApp } from "firebase/app";
 import { getFirestore, disableNetwork, enableNetwork } from "firebase/firestore";
-import { useNetInfo }from '@react-native-community/netinfo';
+import { useNetInfo } from '@react-native-community/netinfo';
 import { useEffect } from "react";
 import { LogBox, Alert } from "react-native";
+import { getStorage } from 'firebase/storage'
 
 // Create the navigator
 const Stack = createNativeStackNavigator();
 
 const App = () => {
 
+  // Get network connection status
   const connectionStatus = useNetInfo();
-  
+
+  // Firebase configuration object
   const firebaseConfig = {
     apiKey: "AIzaSyArf4_A5e5sAk1AK9Gj-ODYfaE7VMsdaNs",
     authDomain: "chat-app-50f52.firebaseapp.com",
@@ -27,21 +31,22 @@ const App = () => {
     measurementId: "G-CF2GNFJSB0"
   };
 
-  // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-// Initialize Cloud Firestore and get a reference to the service
-const db = getFirestore(app);
+  // Initialize Firebase with the configuration
+  const app = initializeApp(firebaseConfig);
 
-useEffect(() => {
-  if (connectionStatus.isConnected === false) {
-    Alert.alert("Connection Lost!");
-    disableNetwork(db);
-  } else if (connectionStatus.isConnected === true) {
-    enableNetwork(db);
-  }
-}, [connectionStatus.isConnected]);
+  useEffect(() => {
+    // Handle network connection changes
+    if (connectionStatus.isConnected === false) {
+      Alert.alert("Connection Lost!");
+      disableNetwork(db); // Disable Firebase Firestore network
+    } else if (connectionStatus.isConnected === true) {
+      enableNetwork(db); // Enable Firebase Firestore network
+    }
+  }, [connectionStatus.isConnected]);
 
-
+  // Initialize Cloud Firestore and get a reference to the service
+  const db = getFirestore(app);
+  const storage = getStorage(app);
 
   return (
     <NavigationContainer>
@@ -54,7 +59,11 @@ useEffect(() => {
         />
         <Stack.Screen
           name="Chat">
-          {(props) => <Chat {...props} db={db} isConnected={connectionStatus.isConnected} />}
+          {(props) => <Chat 
+          {...props} 
+          isConnected={connectionStatus.isConnected} 
+          db={db} 
+          storage={storage}  />}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>

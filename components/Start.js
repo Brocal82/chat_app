@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, ImageBackground, TouchableOpacity, KeyboardAvoidingView, ScrollView, Alert } from 'react-native';
-import { getAuth, signInAnonymously } from "firebase/auth";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  ImageBackground,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  ScrollView,
+  Alert,
+} from 'react-native';
+import { getAuth, signInAnonymously } from 'firebase/auth';
 
 const image = require('../images/Bg-Image.png');
 
@@ -12,36 +22,46 @@ const backgroundColors = {
 };
 
 const Start = ({ navigation }) => {
+  // Initialize Firebase authentication
   const auth = getAuth();
   const [name, setName] = useState('');
   const [color, setColor] = useState(backgroundColors.a);
 
   const signInUser = () => {
+    // Sign in anonymously using Firebase
     signInAnonymously(auth)
-      .then(result => {
-        navigation.navigate("Chat", { userId: result.user.uid, name, color:color, });
-        Alert.alert("Signed in Successfully!");
+      .then((result) => {
+        // Navigate to the Chat screen with user information
+        navigation.navigate('Chat', {
+          userID: result.user.uid,
+          name: name,
+          color: color,
+        });
+        Alert.alert('Signed in Successfully!');
       })
       .catch((error) => {
-        Alert.alert("Unable to sign in, try later again.", error);
-      })
-  }
+        Alert.alert('Unable to sign in, try again later.', error);
+      });
+  };
 
   return (
     <ImageBackground source={image} resizeMode="cover" style={styles.image}>
       <ScrollView contentContainerStyle={styles.container}>
+        {/* Render the Chat App title */}
         <Text style={styles.appTitle}>Chat App</Text>
         <View style={styles.inputContainer}>
           <KeyboardAvoidingView style={styles.inputContainer} behavior="padding" enabled>
+            {/* Input field for user's nickname */}
             <TextInput
               style={styles.textInput}
               value={name}
               onChangeText={setName}
-              placeholder="Nickaname"
+              placeholder="Nickname"
               placeholderTextColor="#757083"
             />
             <Text style={styles.textColorSelector}>Choose background color:</Text>
             <View style={styles.colorSelector}>
+              {/* Background color selection buttons */}
               <TouchableOpacity
                 style={[
                   styles.circle,
@@ -76,17 +96,15 @@ const Start = ({ navigation }) => {
               ></TouchableOpacity>
             </View>
           </KeyboardAvoidingView>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={signInUser} // Call the handleStartChatting function when the button is pressed
-          >
+          {/* Button to start chatting */}
+          <TouchableOpacity style={styles.button} onPress={signInUser}>
             <Text style={styles.buttonText}>Start Chatting</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
     </ImageBackground>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
