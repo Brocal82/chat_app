@@ -82,6 +82,7 @@ const CustomActions = ({wrapperStyle, iconTextStyle, onSend, storage, userID}) =
     return `${userID}-${timeStamp}-${imageName}`;
   }
   
+  
   // Upload an image to Firebase Storage and send its URL
   const uploadAndSendImage = async (imageURI) => {
     const uniqueRefString = generateReference(imageURI);
