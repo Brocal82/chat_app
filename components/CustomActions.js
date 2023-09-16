@@ -97,7 +97,12 @@ const CustomActions = ({wrapperStyle, iconTextStyle, onSend, storage, userID}) =
   
   return (
     // TouchableOpacity for triggering actions
-    <TouchableOpacity style={styles.container} onPress={onActionPress}>
+    <TouchableOpacity style={styles.container} onPress={onActionPress} accessible={true}
+    accessibilityLabel="Open action Sheet"
+    accessibilityLabelledBy="formLabel"
+    accessibilityHint="Open Action Sheet" 
+    >
+  
       <View style={[styles.wrapper, wrapperStyle]}>
         <Text style={[styles.iconText, iconTextStyle]}>+</Text>
       </View>

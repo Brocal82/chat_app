@@ -21,32 +21,6 @@ const Chat = ({ route, navigation, db, isConnected, storage }) => {
     navigation.setOptions({ title: name });
   }, []);
 
-
-  // useEffect(() => {
-  //   // Set initial example messages
-  //   setMessages([
-  //     {
-  //       _id: 1,
-  //       text: 'Hello developer',
-  //       createdAt: new Date(),
-  //       user: {
-  //         _id: 2,
-  //         name: 'React Native',
-  //         avatar: 'https://picsum.photos/140'
-  //       },
-  //       // location: {
-  //         //   latitude: 48.864601,
-  //         //   longitude: 2.398704,
-  //         // },
-  //       },
-  //       {
-  //         _id: 2,
-  //         text: 'This is a system message',
-  //         createdAt: new Date(),
-  //         system: true,
-  //       },
-  //     ]);
-  //   }, []);
     
     useEffect(() => {
       if (isConnected === true) {
