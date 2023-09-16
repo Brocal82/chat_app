@@ -1,16 +1,26 @@
 import { View, TouchableOpacity, Text, StyleSheet, Alert } from "react-native";
-import { useActionSheet } from '@expo/react-native-action-sheet';
-import * as ImagePicker from 'expo-image-picker';
-import * as Location from 'expo-location';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { useActionSheet } from "@expo/react-native-action-sheet";
+import * as ImagePicker from "expo-image-picker";
+import * as Location from "expo-location";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 // CustomActions component for handling additional message actions
-const CustomActions = ({wrapperStyle, iconTextStyle, onSend, storage, userID}) => {
-
+const CustomActions = ({
+  wrapperStyle,
+  iconTextStyle,
+  onSend,
+  storage,
+  userID,
+}) => {
   const actionSheet = useActionSheet();
   // Handle action button press
   const onActionPress = () => {
-    const options = ['Choose From Library', 'Take Picture', 'Send Location', 'Cancel'];
+    const options = [
+      "Choose From Library",
+      "Take Picture",
+      "Send Location",
+      "Cancel",
+    ];
     const cancelButtonIndex = options.length - 1;
     actionSheet.showActionSheetWithOptions(
       {
@@ -30,25 +40,24 @@ const CustomActions = ({wrapperStyle, iconTextStyle, onSend, storage, userID}) =
             return;
           default:
         }
-      },
+      }
     );
   };
 
-  
   // Pick an image from the device library
   const pickImage = async () => {
-    try{
-    let permissions = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (permissions?.granted) {
-      let result = await ImagePicker.launchImageLibraryAsync();
-      if (!result.canceled) await uploadAndSendImage(result.assets[0].uri);
-      else Alert.alert("Permissions haven't been granted.");
-    }
-    }catch(e){
+    try {
+      let permissions = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (permissions?.granted) {
+        let result = await ImagePicker.launchImageLibraryAsync();
+        if (!result.canceled) await uploadAndSendImage(result.assets[0].uri);
+        else Alert.alert("Permissions haven't been granted.");
+      }
+    } catch (e) {
       console.error(e);
     }
-  }
-  
+  };
+
   // Take a new photo with the camera
   const takePhoto = async () => {
     let permissions = await ImagePicker.requestCameraPermissionsAsync();
@@ -57,8 +66,8 @@ const CustomActions = ({wrapperStyle, iconTextStyle, onSend, storage, userID}) =
       if (!result.canceled) await uploadAndSendImage(result.assets[0].uri);
       else Alert.alert("Permissions haven't been granted.");
     }
-  }
-  
+  };
+
   // Get the current location and send it as a message
   const getLocation = async () => {
     let permissions = await Location.requestForegroundPermissionsAsync();
@@ -73,16 +82,15 @@ const CustomActions = ({wrapperStyle, iconTextStyle, onSend, storage, userID}) =
         });
       } else Alert.alert("Error occurred while fetching location");
     } else Alert.alert("Permissions haven't been granted.");
-  }
-  
+  };
+
   // Generate a unique reference for Firebase Storage
   const generateReference = (uri) => {
-    const timeStamp = (new Date()).getTime();
+    const timeStamp = new Date().getTime();
     const imageName = uri.split("/")[uri.split("/").length - 1];
     return `${userID}-${timeStamp}-${imageName}`;
-  }
-  
-  
+  };
+
   // Upload an image to Firebase Storage and send its URL
   const uploadAndSendImage = async (imageURI) => {
     const uniqueRefString = generateReference(imageURI);
@@ -90,25 +98,27 @@ const CustomActions = ({wrapperStyle, iconTextStyle, onSend, storage, userID}) =
     const response = await fetch(imageURI);
     const blob = await response.blob();
     uploadBytes(newUploadRef, blob).then(async (snapshot) => {
-      const imageURL = await getDownloadURL(snapshot.ref)
-      onSend({ image: imageURL })
+      const imageURL = await getDownloadURL(snapshot.ref);
+      onSend({ image: imageURL });
     });
-  }
-  
+  };
+
   return (
     // TouchableOpacity for triggering actions
-    <TouchableOpacity style={styles.container} onPress={onActionPress} accessible={true}
-    accessibilityLabel="Open action Sheet"
-    accessibilityLabelledBy="formLabel"
-    accessibilityHint="Open Action Sheet" 
+    <TouchableOpacity
+      style={styles.container}
+      onPress={onActionPress}
+      accessible={true}
+      accessibilityLabel="Open action Sheet"
+      accessibilityLabelledBy="formLabel"
+      accessibilityHint="Open Action Sheet"
     >
-  
       <View style={[styles.wrapper, wrapperStyle]}>
         <Text style={[styles.iconText, iconTextStyle]}>+</Text>
       </View>
     </TouchableOpacity>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -119,16 +129,16 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     borderRadius: 13,
-    borderColor: '#b2b2b2',
+    borderColor: "#b2b2b2",
     borderWidth: 2,
     flex: 1,
   },
   iconText: {
-    color: '#b2b2b2',
-    fontWeight: 'bold',
+    color: "#b2b2b2",
+    fontWeight: "bold",
     fontSize: 10,
-    backgroundColor: 'transparent',
-    textAlign: 'center',
+    backgroundColor: "transparent",
+    textAlign: "center",
   },
 });
 
